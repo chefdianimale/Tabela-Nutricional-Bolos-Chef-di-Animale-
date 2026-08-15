@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chef di Animale — Monte seu bolo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --purple: #6E2C8F;
+    --purple-dark: #4A1C63;
+    --orange: #F5A623;
+    --orange-dark: #D98A0F;
+    --cream: #FDF7EC;
+    --paper: #FFFFFF;
+    --ink: #3A1F4D;
+    --ink-soft: #6B5580;
+    --line: #E9DCF2;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--cream);
+    color:var(--ink);
+    font-family:'Nunito', sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .bone-row{
+    position:fixed; inset:0; pointer-events:none; opacity:.05; z-index:0;
+    background-image: radial-gradient(circle at 10% 20%, var(--purple) 2px, transparent 2px),
+                       radial-gradient(circle at 80% 60%, var(--orange) 2px, transparent 2px);
+    background-size: 120px 120px;
+  }
+  header{
+    background: linear-gradient(180deg, var(--purple) 0%, var(--purple-dark) 100%);
+    padding: 28px 20px 60px;
+    text-align:center;
+    position:relative;
+    overflow:hidden;
+  }
+  header::after{
+    content:"";
+    position:absolute; left:0; right:0; bottom:-1px; height:40px;
+    background:var(--cream);
+    border-radius:50% 50% 0 0 / 100% 100% 0 0;
+    transform: scaleX(1.4);
+  }
+  header img{
+    height:64px;
+    filter: brightness(0) invert(1);
+    margin-bottom:10px;
+  }
+  header h1{
+    font-family:'Baloo 2', sans-serif;
+    color:#fff;
+    font-size: clamp(24px, 5vw, 34px);
+    margin: 6px 0 4px;
+    font-weight:700;
+  }
+  header p{
+    color: #E9D5F5;
+    margin:0;
+    font-size:15px;
+    font-weight:600;
+  }
+  main{
+    max-width: 640px;
+    margin: -30px auto 0;
+    padding: 0 18px 60px;
+    position:relative;
+    z-index:1;
+  }
+  .step-label{
+    font-family:'Baloo 2', sans-serif;
+    font-weight:700;
+    color:var(--purple);
+    font-size:14px;
+    letter-spacing:.03em;
+    text-transform:uppercase;
+    display:flex;
+    align-items:center;
+    gap:8px;
+    margin: 28px 0 12px;
+  }
+  .step-label .dot{
+    width:22px;height:22px;border-radius:50%;
+    background:var(--orange);
+    color:#fff;
+    display:inline-flex;align-items:center;justify-content:center;
+    font-size:12px;
+  }
+  .pill-grid{
+    display:grid;
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    gap: 10px;
+  }
+  .pill{
+    background:var(--paper);
+    border: 2px solid var(--line);
+    border-radius: 16px;
+    padding: 14px 10px;
+    text-align:center;
+    cursor:pointer;
+    font-family:'Baloo 2', sans-serif;
+    font-weight:600;
+    color:var(--ink);
+    font-size:15px;
+    transition: all .15s ease;
+    user-select:none;
+  }
+  .pill:hover{ border-color:var(--orange); transform: translateY(-1px); }
+  .pill.active{
+    background: var(--purple);
+    border-color: var(--purple);
+    color:#fff;
+    box-shadow: 0 4px 14px rgba(110,44,143,.35);
+  }
+  .card{
+    background:var(--paper);
+    border-radius:20px;
+    padding:22px;
+    margin-top:26px;
+    border:1px solid var(--line);
+    box-shadow: 0 6px 24px rgba(74,28,99,.06);
+  }
+  .card h2{
+    font-family:'Baloo 2', sans-serif;
+    font-size:19px;
+    margin:0 0 4px;
+    color:var(--purple-dark);
+  }
+  .card .sub{
+    font-size:13px;
+    color:var(--ink-soft);
+    margin:0 0 16px;
+    font-weight:600;
+  }
+  .ing-list{
+    list-style:none;
+    margin:0; padding:0;
+    display:flex; flex-wrap:wrap; gap:8px;
+  }
+  .ing-list li{
+    background: var(--cream);
+    border:1px solid var(--line);
+    padding:6px 12px;
+    border-radius:999px;
+    font-size:13.5px;
+    font-weight:700;
+    color:var(--purple-dark);
+  }
+  .placeholder{
+    color:var(--ink-soft);
+    font-weight:600;
+    font-size:14px;
+  }
+  /* Nutrition label, styled like a pet-food fact panel */
+  .nutri-panel{
+    background: var(--paper);
+    border: 3px solid var(--ink);
+    border-radius: 12px;
+    padding: 0;
+    overflow:hidden;
+  }
+  .nutri-panel .head{
+    background: var(--ink);
+    color:#fff;
+    font-family:'Baloo 2', sans-serif;
+    font-weight:700;
+    font-size:20px;
+    padding:12px 18px;
+  }
+  .nutri-panel .head span{
+    display:block;
+    font-family:'Nunito', sans-serif;
+    font-weight:700;
+    font-size:11px;
+    letter-spacing:.06em;
+    text-transform:uppercase;
+    color:var(--orange);
+    margin-top:2px;
+  }
+  .nutri-table{
+    width:100%;
+    border-collapse:collapse;
+  }
+  .nutri-table tr{ border-bottom: 1px solid var(--line); }
+  .nutri-table tr:last-child{ border-bottom:none; }
+  .nutri-table td{
+    padding: 10px 18px;
+    font-size:14.5px;
+  }
+  .nutri-table td:first-child{
+    font-weight:700;
+    color:var(--ink);
+  }
+  .nutri-table td:last-child{
+    text-align:right;
+    font-weight:800;
+    color:var(--purple-dark);
+    font-variant-numeric: tabular-nums;
+  }
+  .qty-table{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:10px;
+  }
+  .qty-table th{
+    background:var(--purple);
+    color:#fff;
+    font-family:'Baloo 2', sans-serif;
+    font-size:13px;
+    padding:9px 6px;
+    text-transform:uppercase;
+    letter-spacing:.03em;
+  }
+  .qty-table th:first-child{ border-radius:8px 0 0 0; }
+  .qty-table th:last-child{ border-radius:0 8px 0 0; }
+  .qty-table td{
+    text-align:center;
+    padding:9px 6px;
+    font-size:14px;
+    font-weight:700;
+    border-bottom:1px solid var(--line);
+  }
+  footer{
+    text-align:center;
+    padding: 10px 20px 30px;
+    color:var(--ink-soft);
+    font-size:12.5px;
+    font-weight:600;
+  }
+</style>
+</head>
+<body>
+<div class="bone-row"></div>
+
+<header>
+  <img src="logo.png" alt="Chef di Animale">
+  <h1>Monte o seu bolo</h1>
+  <p>Escolha o sabor e o recheio para ver os ingredientes e a tabela nutricional</p>
+</header>
+
+<main>
+  <div class="step-label"><span class="dot">1</span> Sabor do bolo</div>
+  <div class="pill-grid" id="flavor-grid"></div>
+
+  <div class="step-label"><span class="dot">2</span> Recheio</div>
+  <div class="pill-grid" id="filling-grid"></div>
+
+  <div class="card">
+    <h2 id="combo-title">Seu bolo</h2>
+    <p class="sub">Ingredientes desta combinação</p>
+    <ul class="ing-list" id="ing-list"></ul>
+    <p class="placeholder" id="placeholder-msg">Selecione um sabor e um recheio acima para ver os ingredientes.</p>
+  </div>
+
+  <div class="step-label"><span class="dot">✓</span> Informação nutricional</div>
+  <div class="nutri-panel">
+    <div class="head">Tabela Nutricional<span>Valores por Kg de produto</span></div>
+    <table class="nutri-table">
+      <tr><td>Umidade</td><td>536,4 g/Kg</td></tr>
+      <tr><td>Proteína</td><td>98,4 g/Kg</td></tr>
+      <tr><td>Fibra Bruta (FB)</td><td>10,6 g/Kg</td></tr>
+      <tr><td>Extrato Etéreo (EE)</td><td>44,9 g/Kg</td></tr>
+      <tr><td>Cinzas</td><td>10,4 g/Kg</td></tr>
+      <tr><td>Cálcio</td><td>315 – 385 mg/Kg</td></tr>
+      <tr><td>Fósforo</td><td>1500 mg/Kg</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2>Quantidade recomendada</h2>
+    <p class="sub">De acordo com o peso do seu pet</p>
+    <table class="qty-table">
+      <tr><th>Peso (Kg)</th><th>Quantidade (g)</th></tr>
+      <tr><td>Até 5</td><td>15 g</td></tr>
+      <tr><td>5 – 10</td><td>25 g</td></tr>
+      <tr><td>10 – 25</td><td>35 g</td></tr>
+      <tr><td>25 – 35</td><td>50 g</td></tr>
+    </table>
+  </div>
+</main>
+
+<footer>Chef di Animale · Pet Cuisine</footer>
+
+<script>
+const flavors = {
+  "Fígado": ["Fígado bovino","Ovo","Óleo de girassol","Água","Farinha de trigo integral","Fermento químico em pó","Cream cheese","Corante natural (beterraba, cúrcuma, biocorantes)"],
+  "Carne": ["Carne bovina","Ovo","Óleo de girassol","Água","Farinha de trigo integral","Fermento químico em pó","Cream cheese","Corante natural (beterraba, cúrcuma, biocorantes)"],
+  "Frango": ["Frango","Ovo","Óleo de girassol","Água","Farinha de trigo integral","Fermento químico em pó","Cream cheese","Corante natural (beterraba, cúrcuma, biocorantes)"],
+  "Salmão": ["Salmão","Ovo","Óleo de girassol","Água","Farinha de trigo integral","Fermento químico em pó","Cream cheese","Corante natural (beterraba, cúrcuma, biocorantes)"],
+  "Banana": ["Banana","Ovo","Óleo de girassol","Água","Farinha de trigo integral","Fermento químico em pó","Cream cheese","Corante natural (beterraba, cúrcuma, biocorantes)"],
+  "Baunilha": ["Baunilha","Mel","Ovo","Óleo de girassol","Água","Farinha de trigo integral","Fermento químico em pó","Cream cheese","Corante natural (beterraba, cúrcuma, biocorantes)"],
+  "Alfarroba": ["Alfarroba","Mel","Ovo","Óleo de girassol","Água","Farinha de trigo integral","Fermento químico em pó","Cream cheese","Corante natural (beterraba, cúrcuma, biocorantes)"],
+  "Cenoura": ["Cenoura","Mel","Ovo","Óleo de girassol","Água","Farinha de trigo integral","Fermento químico em pó","Cream cheese","Corante natural (beterraba, cúrcuma, batata doce roxa em pó, biocorantes)"]
+};
+
+const fillings = {
+  "Batata doce": ["Batata doce","Cúrcuma"],
+  "Batata doce roxa": ["Batata doce roxa"],
+  "Abóbora": ["Abóbora"],
+  "Pasta de amendoim": ["Amendoim","Água"],
+  "Alfarroba": ["Alfarroba"]
+};
+
+const flavorGrid = document.getElementById('flavor-grid');
+const fillingGrid = document.getElementById('filling-grid');
+const ingList = document.getElementById('ing-list');
+const comboTitle = document.getElementById('combo-title');
+const placeholderMsg = document.getElementById('placeholder-msg');
+
+let selectedFlavor = null;
+let selectedFilling = null;
+
+function buildPills(container, data, onSelect){
+  Object.keys(data).forEach(name => {
+    const pill = document.createElement('div');
+    pill.className = 'pill';
+    pill.textContent = name;
+    pill.addEventListener('click', () => {
+      container.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+      pill.classList.add('active');
+      onSelect(name);
+    });
+    container.appendChild(pill);
+  });
+}
+
+function render(){
+  if(!selectedFlavor || !selectedFilling){
+    ingList.style.display = 'none';
+    placeholderMsg.style.display = 'block';
+    comboTitle.textContent = 'Seu bolo';
+    return;
+  }
+  placeholderMsg.style.display = 'none';
+  ingList.style.display = 'flex';
+  comboTitle.textContent = `Bolo de ${selectedFlavor} com recheio de ${selectedFilling}`;
+  ingList.innerHTML = '';
+  const combined = [...flavors[selectedFlavor], ...fillings[selectedFilling]];
+  combined.forEach(item => {
+    const li = document.createElement('li');
+    li.textContent = item;
+    ingList.appendChild(li);
+  });
+}
+
+buildPills(flavorGrid, flavors, (name) => { selectedFlavor = name; render(); });
+buildPills(fillingGrid, fillings, (name) => { selectedFilling = name; render(); });
+render();
+</script>
+</body>
+</html>
